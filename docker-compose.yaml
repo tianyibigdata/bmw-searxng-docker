@@ -48,16 +48,20 @@ services:
     container_name: searxng
     image: docker.io/searxng/searxng:latest
     restart: unless-stopped
-    networks:
-      - searxng
-    ports:
-      - "127.0.0.1:8080:8080"
+    # networks:
+    #   - searxng
+    # ports:
+    #   - "127.0.0.1:8080:8080"
+    network_mode: host
     volumes:
       - ./searxng:/etc/searxng:rw
     environment:
       - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
       - UWSGI_WORKERS=${SEARXNG_UWSGI_WORKERS:-4}
       - UWSGI_THREADS=${SEARXNG_UWSGI_THREADS:-4}
+      - HTTP_PROXY=http://127.0.0.1:48157
+      - HTTPS_PROXY=http://127.0.0.1:48157
+      - NO_PROXY=127.0.0.1,localhost,::1
     cap_drop:
       - ALL
     cap_add:
